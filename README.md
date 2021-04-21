@@ -30,7 +30,8 @@ This edited version include all registered creatures that are used on systems li
 2.  Dat editor window: (Add new button to open the 'Monster' window)
 ![2](https://user-images.githubusercontent.com/66353315/115530105-da242600-a269-11eb-8499-cb52d2028b5b.png)
 
-3.  New 'Monster' window:
+3.  New 'Monster' window:                                                             
+ 
 ![3](https://user-images.githubusercontent.com/66353315/115530349-10fa3c00-a26a-11eb-9793-24290f438cb1.png)
 
 - Monster window:
