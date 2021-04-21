@@ -12,6 +12,9 @@
     <Compile Update="SprEditor.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Monsters.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Page Update="DatEditor.xaml">
@@ -21,6 +24,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="SprEditor.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Monsters.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>

@@ -13,6 +13,7 @@ using System.Linq;
 using System.Collections.ObjectModel;
 using System.Collections.Concurrent;
 using System.ComponentModel;
+using Tibia.Protobuf.StaticData;
 
 namespace Assets_Editor
 {
@@ -23,6 +24,8 @@ namespace Assets_Editor
     {
         public static  string _assetsPath = "";
         public static string _datPath = "";
+        public static string _staticPath = "";
+        public ushort MonsterCount { get; set; }
         public ushort ObjectCount { get; set; }
         public ushort OutfitCount { get; set; }
         public ushort EffectCount { get; set; }
@@ -66,7 +69,8 @@ namespace Assets_Editor
         
         public static List<Catalog> catalog;
 
-        public static Appearances appearances;       
+        public static Appearances appearances;
+        public static StaticData StaticData;
         public static ObservableCollection<ShowList> AllSprList = new ObservableCollection<ShowList>();
         public static ConcurrentDictionary<int, MemoryStream> SprLists = new ConcurrentDictionary<int, MemoryStream>();
         public static int CustomSprLastId = 249999;
@@ -83,7 +87,6 @@ namespace Assets_Editor
             };
             catalog = JsonConvert.DeserializeObject<List<Catalog>>(json, settings);
         }
-
         private void LoadAppearances()
         {
             _datPath = String.Format("{0}{1}", _assetsPath, catalog[0].File);
@@ -93,15 +96,28 @@ namespace Assets_Editor
             using (appStream = new FileStream(_datPath, FileMode.Open, FileAccess.ReadWrite, FileShare.Read))
             {
                 appearances = Appearances.Parser.ParseFrom(appStream);
-                ObjectCount = (ushort)appearances.Object[^1].Id;
-                OutfitCount = (ushort)appearances.Outfit[^1].Id;
-                EffectCount = (ushort)appearances.Effect[^1].Id;
-                MissileCount = (ushort)appearances.Missile[^1].Id;
+                ObjectCount = (ushort)appearances.Object.Count;
+                OutfitCount = (ushort)appearances.Outfit.Count;
+                EffectCount = (ushort)appearances.Effect.Count;
+                MissileCount = (ushort)appearances.Missile.Count;
 
                 ObjectsCount.Content = ObjectCount;
                 OutfitsCount.Content = OutfitCount;
                 EffectsCount.Content = EffectCount;
                 MissilesCount.Content = MissileCount;
+            }
+        }
+        private void LoadStaticData()
+        {
+            _staticPath = String.Format("{0}{1}", _assetsPath, catalog[1].File);
+            if (File.Exists(_staticPath) == false)
+                return;
+            FileStream appStream;
+            using (appStream = new FileStream(_staticPath, FileMode.Open, FileAccess.ReadWrite, FileShare.Read))
+            {
+                StaticData = StaticData.Parser.ParseFrom(appStream);
+                MonsterCount = (ushort)StaticData.Monsters.Count;
+                MonstersCount.Content = MonsterCount;
             }
         }
 
@@ -120,6 +136,7 @@ namespace Assets_Editor
 
                 LoadCatalogJson();
                 LoadAppearances();
+                LoadStaticData();
                 LoadAssets.IsEnabled = true;
             }
             else
@@ -135,7 +152,7 @@ namespace Assets_Editor
         }
         private void Worker_Completed(object sender, RunWorkerCompletedEventArgs e)
         {
-            DatEditor datEditor = new DatEditor(appearances);
+            DatEditor datEditor = new DatEditor(appearances, StaticData);
             datEditor.Show();
             Hide();
         }

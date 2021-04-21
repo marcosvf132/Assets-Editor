@@ -16,6 +16,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using Tibia.Protobuf.Appearances;
 using Tibia.Protobuf.Shared;
+using Tibia.Protobuf.StaticData;
 
 namespace Assets_Editor
 {
@@ -24,8 +25,8 @@ namespace Assets_Editor
     /// </summary>
     public partial class DatEditor : Window
     {
-        private static ObservableCollection<ShowList> ThingsOutfit = new ObservableCollection<ShowList>();
-        private static ObservableCollection<ShowList> ThingsItem = new ObservableCollection<ShowList>();
+        public static ObservableCollection<ShowList> ThingsOutfit = new ObservableCollection<ShowList>();
+        public static ObservableCollection<ShowList> ThingsItem = new ObservableCollection<ShowList>();
         private static ObservableCollection<ShowList> ThingsEffect = new ObservableCollection<ShowList>();
         private static ObservableCollection<ShowList> ThingsMissile = new ObservableCollection<ShowList>();
         public Appearance CurrentObjectAppearance;
@@ -40,6 +41,8 @@ namespace Assets_Editor
         private ObservableCollection<ShowList> ObjectMountSprList = new ObservableCollection<ShowList>();
         private ObservableCollection<ShowList> ObjectAddonMountSprList = new ObservableCollection<ShowList>();
 
+        // Static data
+        public static List<Monsterptr> ThingsMonsters = new List<Monsterptr>();
         protected override void OnClosed(EventArgs e)
         {
             base.OnClosed(e);
@@ -55,9 +58,28 @@ namespace Assets_Editor
                 A_FlagAutomapColorPicker.AvailableColors.Add(new Xceed.Wpf.Toolkit.ColorItem(System.Windows.Media.Color.FromRgb(myRgbColor.R, myRgbColor.G, myRgbColor.B), x.ToString()));
             }
         }
-        public DatEditor(Appearances appearances)
+        public DatEditor(Appearances appearances, StaticData StaticData)
             :this()
         {
+            // Static Data
+            foreach (var outfit in StaticData.Monsters)
+            {
+                ThingsMonsters.Add(new Monsterptr()
+                {
+                    RaceId = outfit.RaceId,
+                    Name = outfit.Name,
+                    LookTypeExBool = outfit.LookChild.LookTypeEx,
+                    LookTypeEx = outfit.LookChild.LookTypeExValue,
+                    LookTypeBool = outfit.LookChild.LookType,
+                    Addon = outfit.LookChild.Addon,
+                    LookType = outfit.LookChild.LookType ? outfit.LookChild.LookTypeValue : 0,
+                    LookHead = outfit.LookChild.LookColors != null ? outfit.LookChild.LookColors.LookHead : 0,
+                    LookBody = outfit.LookChild.LookColors != null ? outfit.LookChild.LookColors.LookBody : 0,
+                    LookLegs = outfit.LookChild.LookColors != null ? outfit.LookChild.LookColors.LookLegs : 0,
+                    LookFeet = outfit.LookChild.LookColors != null ? outfit.LookChild.LookColors.LookFeet : 0
+                });
+            }
+            // Appearance
             foreach (var outfit in appearances.Outfit)
             {
                 ThingsOutfit.Add(new ShowList() { Id = outfit.Id});
@@ -1099,7 +1121,8 @@ namespace Assets_Editor
                     {
                         MainWindow.CustomSprLastId = sheet.LastSpriteid;
                         SprEditor.CustomCatalog.Add(sheet);
-                        using System.Drawing.Bitmap SheetM = LZMA.DecompressFileLZMA(_sprPath);
+                        System.Drawing.Bitmap bitmap = LZMA.DecompressFileLZMA(_sprPath);
+                        using System.Drawing.Bitmap SheetM = bitmap;
                         var lockedBitmap = new LockBitmap(SheetM);
                         lockedBitmap.LockBits();
                         for (int y = 0; y < SheetM.Height; y++)
@@ -1125,6 +1148,11 @@ namespace Assets_Editor
         {
             base.OnClosed(e);
             Application.Current.Shutdown();
+        }
+        private void Monster_open(object sender, RoutedEventArgs e)
+        {
+            Monsters monsterWindow = new Monsters();
+            monsterWindow.Show();
         }
         public class LowercaseContractResolver : DefaultContractResolver
         {
@@ -1154,6 +1182,7 @@ namespace Assets_Editor
             var output = File.Create(MainWindow._datPath);
             MainWindow.appearances.WriteTo(output);
             output.Close();
+            Utils.CompileStaticData();
             StatusBar.MessageQueue.Enqueue($"Compiled.", null, null, null, false, true, TimeSpan.FromSeconds(2));
         }
         private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)

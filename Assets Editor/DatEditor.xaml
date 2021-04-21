@@ -140,7 +140,7 @@
                     </Border>
                     <StackPanel>
                         <Menu IsMainMenu="True" DockPanel.Dock="Top">
-                            <MenuItem Header="_File">
+                            <MenuItem Header="_File" >
                                 <MenuItem Header="Exit" InputGestureText="Ctrl+E" Click="Exit_Click">
                                     <MenuItem.Icon>
                                         <materialDesign:PackIcon Kind="ExitToApp" />
@@ -152,6 +152,7 @@
                                     </MenuItem.Icon>
                                 </MenuItem>
                             </MenuItem>
+                            <MenuItem Header="_Monsters" Click="Monster_open" Grid.IsSharedSizeScope="True"/>
                         </Menu>
                         <TabControl x:Name="ViewTabControl" DockPanel.Dock="Top" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="10,0,10,0">
                             <TabItem Header="Properties">
