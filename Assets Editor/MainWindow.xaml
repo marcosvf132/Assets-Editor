@@ -25,24 +25,30 @@
         <Button Style="{StaticResource MaterialDesignIconButton}" materialDesign:RippleAssist.IsDisabled="True" Margin="468,37,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Height="55" Width="55" Click="SelectAssetsFolder">
             <materialDesign:PackIcon  Kind="CardSearch" Height="40" Width="40" />
         </Button>
-        <StackPanel Margin="159,92,0,0" HorizontalAlignment="Left" Grid.RowSpan="2" >
+        <StackPanel Margin="149,92,0,0" HorizontalAlignment="Left" Grid.RowSpan="2" >
             <Label Content="Objects:"/>
             <Label Content="Outfits:"/>
             <Label Content="Effects:"/>
             <Label Content="Missiles:"/>
-            <Label Content="Monsters:"/>
         </StackPanel>
-        <StackPanel Margin="219,92,0,0" HorizontalAlignment="Left" Grid.RowSpan="2">
+        <StackPanel Margin="209,92,0,0" HorizontalAlignment="Left" Grid.RowSpan="2">
             <Label x:Name="ObjectsCount"/>
             <Label x:Name="OutfitsCount"/>
             <Label x:Name="EffectsCount"/>
             <Label x:Name="MissilesCount"/>
+        </StackPanel>
+        <StackPanel Margin="349,92,0,0" HorizontalAlignment="Left" Grid.RowSpan="2" >
+            <Label Content="Monsters:"/>
+            <Label Content="Achievements:"/>
+        </StackPanel>
+        <StackPanel Margin="439,92,0,0" HorizontalAlignment="Left" Grid.RowSpan="2">
             <Label x:Name="MonstersCount"/>
+            <Label x:Name="AchievsCount"/>
         </StackPanel>
         <StackPanel Margin="0,145,6,18" HorizontalAlignment="Right" FlowDirection="LeftToRight" Grid.Row="1" >
             <TextBlock Foreground="#FFACACAC" FontSize="10"><Run Text="Assets-Editor v1.0.5 by Arch-Mina (Marcosvf132 edition)"/></TextBlock>
         </StackPanel>
-        <Button x:Name="LoadAssets" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,80,0,0" IsEnabled="False" Click="LoadAssets_Click" Grid.Row="1" >
+        <Button x:Name="LoadAssets" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,60,0,0" IsEnabled="False" Click="LoadAssets_Click" Grid.Row="1" >
             <Button.Content>
                 <StackPanel>
                     <TextBlock Text="Load Assets" HorizontalAlignment="Center"></TextBlock>

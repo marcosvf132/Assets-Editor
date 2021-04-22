@@ -18,17 +18,40 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Tibia.Protobuf.Appearances;
 using Tibia.Protobuf.Shared;
-using Tibia.Protobuf.StaticData;
+using Tibia.Protobuf.Staticdata;
+using Colors = Tibia.Protobuf.Staticdata.Colors;
 
 namespace Assets_Editor
 {
     public partial class Monsters : Window
     {
-        private Monsterptr cacheData = new Monsterptr();
+        private Monster cacheData = CreateSampleCreature();
         public Monsters()
         {
             InitializeComponent();
             LoadCurrentMonsterData();
+        }
+        static private Monster CreateSampleCreature()
+        {
+            Monster sample = new Monster();
+            Colors colorSample = new Colors
+            {
+                Lookhead = 95,
+                Lookbody = 113,
+                Looklegs = 39,
+                Lookfeet = 115
+            };
+            Appearance_Type appereanceSample = new Appearance_Type
+            {
+                Outfittype = 129,
+                Outfitaddon = 0,
+                Colors = colorSample
+            };
+            sample.Raceid = 1;
+            sample.Name = "sample";
+            sample.AppearanceType = appereanceSample;
+
+            return sample;
         }
         private void LoadCurrentMonsterData()
         {
@@ -43,9 +66,15 @@ namespace Assets_Editor
             M_LookLegs_color.IsEnabled = true;
             M_LookFeet_color.IsEnabled = true;
 
+            // Set first monster on the screen
+            if (MainWindow.StaticData.Monster[0] != null)
+            {
+                cacheData.MergeFrom(MainWindow.StaticData.Monster[0]);
+            }
+
             // Monster list
             M_List.ItemsSource = null;
-            M_List.ItemsSource = DatEditor.ThingsMonsters;
+            M_List.ItemsSource = MainWindow.StaticData.Monster;
 
             // Values //
             M_Name.Text = "name";
@@ -99,9 +128,9 @@ namespace Assets_Editor
         private void M_ID_ValueChanged(object sender, RoutedEventArgs e)
         {
             M_ID.Foreground = new SolidColorBrush(color: Color.FromRgb(26, 91, 0));
-            foreach (Monsterptr data_monster in DatEditor.ThingsMonsters)
+            foreach (Monster data_monster in MainWindow.StaticData.Monster)
             {
-                if (data_monster.RaceId == M_ID.Value && data_monster != cacheData)
+                if (data_monster.Raceid == M_ID.Value && data_monster != cacheData)
                 {
                     M_ID.Foreground = new SolidColorBrush(color: Color.FromRgb(255, 0, 0));
                     break;
@@ -110,7 +139,12 @@ namespace Assets_Editor
         }
         private void M_LookType_ValueChanged(object sender, RoutedEventArgs e)
         {
-            if (cacheData.LookTypeExBool)
+            if (cacheData.AppearanceType == null)
+            {
+                cacheData = CreateSampleCreature();
+            }
+
+            if (cacheData.AppearanceType.HasItemtype)
             {
                 A_FlagLookType.IsChecked = false;
                 A_FlagLookTypeEx.IsChecked = true;
@@ -169,7 +203,7 @@ namespace Assets_Editor
                         break;
                     }
                 }
-            } else if (M_LookTypeEx.Value != null && (uint)M_LookTypeEx.Value > 0)
+            } else if (M_LookTypeEx.Value != null && M_LookTypeEx.IsEnabled && (uint)M_LookTypeEx.Value > 0)
             {
                 foreach (var outfitEx in MainWindow.appearances.Object)
                 {
@@ -188,31 +222,32 @@ namespace Assets_Editor
         }
         private void M_Delete_Click(object sender, RoutedEventArgs e)
         {
-            foreach (Monsterptr data_monster in DatEditor.ThingsMonsters)
+            foreach (Monster data_monster in MainWindow.StaticData.Monster)
             {
-                if (data_monster.RaceId == cacheData.RaceId)
+                if (data_monster.Raceid == cacheData.Raceid)
                 {
-                    DatEditor.ThingsMonsters.Remove(data_monster);
+                    MainWindow.StaticData.Monster.Remove(data_monster);
                     break;
                 }
             }
             M_List.ItemsSource = null;
-            M_List.ItemsSource = DatEditor.ThingsMonsters;
-            StatusBar.MessageQueue.Enqueue($"Creature '{cacheData.Name}' with id: {cacheData.RaceId} was removed");
+            M_List.ItemsSource = MainWindow.StaticData.Monster;
+            StatusBar.MessageQueue.Enqueue($"Creature '{cacheData.Name}' with id: {cacheData.Raceid} was removed");
         }
 
         private void M_New_Click(object sender, RoutedEventArgs e)
         {
-            cacheData = new Monsterptr();
-            M_Name.Text = "name";
-            M_LookType.Value = 0;
-            M_Addon.Value = 0;
+            cacheData = CreateSampleCreature();
+            /// Update window
+            M_Name.Text = cacheData.Name;
+            M_LookType.Value = (int?)cacheData.AppearanceType.Outfittype;
+            M_Addon.Value = (int?)cacheData.AppearanceType.Outfitaddon;
             M_LookTypeEx.Value = 0;
-            M_LookHead_color.Value = 0;
-            M_LookBody_color.Value = 0;
-            M_LookLegs_color.Value = 0;
-            M_LookFeet_color.Value = 0;
-            M_ID.Value = 1;
+            M_LookHead_color.Value = (int?)cacheData.AppearanceType.Colors.Lookhead;
+            M_LookBody_color.Value = (int?)cacheData.AppearanceType.Colors.Lookbody;
+            M_LookLegs_color.Value = (int?)cacheData.AppearanceType.Colors.Looklegs;
+            M_LookFeet_color.Value = (int?)cacheData.AppearanceType.Colors.Lookfeet;
+            M_ID.Value = (int?)cacheData.Raceid;
             M_LookType_ValueChanged(sender, e);
             StatusBar.MessageQueue.Enqueue("New creature template was created");
         }
@@ -220,33 +255,52 @@ namespace Assets_Editor
         private void M_Save_Click(object sender, RoutedEventArgs e)
         {
             cacheData.Name = M_Name.Text;
-            cacheData.LookType = (uint)M_LookType.Value;
-            cacheData.LookTypeEx = (uint)M_LookTypeEx.Value;
-            cacheData.LookTypeExBool = M_LookTypeEx.IsEnabled;
-            cacheData.LookTypeBool = M_LookType.IsEnabled;
-            cacheData.LookHead = (uint)M_LookHead_color.Value;
-            cacheData.LookBody = (uint)M_LookBody_color.Value;
-            cacheData.LookLegs = (uint)M_LookLegs_color.Value;
-            cacheData.LookFeet = (uint)M_LookFeet_color.Value;
-            cacheData.RaceId = (uint)M_ID.Value;
-            cacheData.Addon = (uint)M_Addon.Value;
-            bool overwrite = false;
-            foreach (Monsterptr data_monster in DatEditor.ThingsMonsters)
+            cacheData.Raceid = (uint)M_ID.Value;
+            if ((bool)A_FlagLookType.IsChecked)
             {
-                if (data_monster.RaceId == cacheData.RaceId)
+                cacheData.AppearanceType.ClearItemtype();
+                Colors lookcolor = new Colors
                 {
-                    DatEditor.ThingsMonsters.Remove(data_monster);
+                    Lookhead = (uint)M_LookHead_color.Value,
+                    Lookbody = (uint)M_LookBody_color.Value,
+                    Looklegs = (uint)M_LookLegs_color.Value,
+                    Lookfeet = (uint)M_LookFeet_color.Value
+                };
+                Appearance_Type childAppearance = new Appearance_Type
+                {
+                    Outfittype = (uint)M_LookType.Value,
+                    Colors = lookcolor,
+                    Outfitaddon = (uint)M_Addon.Value
+                };
+                cacheData.AppearanceType = childAppearance;
+            }
+            else
+            {
+                cacheData.AppearanceType.ClearOutfittype();
+                cacheData.AppearanceType.ClearOutfitaddon();
+                Appearance_Type childAppearance = new Appearance_Type
+                {
+                    Itemtype = (uint)M_LookTypeEx.Value
+                };
+                cacheData.AppearanceType = childAppearance;
+            }
+            bool overwrite = false;
+            foreach (Monster data_monster in MainWindow.StaticData.Monster)
+            {
+                if (data_monster.Raceid == cacheData.Raceid)
+                {
+                    MainWindow.StaticData.Monster.Remove(data_monster);
                     overwrite = true;
-                    StatusBar.MessageQueue.Enqueue($"Creature '{cacheData.Name}' overwrited the id: {cacheData.RaceId}");
+                    StatusBar.MessageQueue.Enqueue($"Creature '{cacheData.Name}' overwrited the id: {cacheData.Raceid}");
                     break;
                 }
             }
-            DatEditor.ThingsMonsters.Add(cacheData);
+            MainWindow.StaticData.Monster.Add(cacheData);
             Utils.RegisterNewMonsterStaticData(cacheData);
             M_List.ItemsSource = null;
-            M_List.ItemsSource = DatEditor.ThingsMonsters;
+            M_List.ItemsSource = MainWindow.StaticData.Monster;
             if (!overwrite)
-                StatusBar.MessageQueue.Enqueue($"Creature '{cacheData.Name}' saved on id: {cacheData.RaceId}");
+                StatusBar.MessageQueue.Enqueue($"Creature '{cacheData.Name}' saved on id: {cacheData.Raceid}");
         }
 
         private void A_FlagLookType_Checked(object sender, RoutedEventArgs e)
@@ -257,8 +311,6 @@ namespace Assets_Editor
             M_LookTypeEx.IsEnabled = false;
             M_LookType.IsEnabled = true;
             M_LookType_ValueChanged(sender, e);
-            cacheData.LookTypeBool = true;
-            cacheData.LookTypeExBool = false;
             M_LookHead_color.IsEnabled = true;
             M_LookBody_color.IsEnabled = true;
             M_LookLegs_color.IsEnabled = true;
@@ -283,8 +335,6 @@ namespace Assets_Editor
             M_LookBody_color.IsEnabled = false;
             M_LookLegs_color.IsEnabled = false;
             M_LookFeet_color.IsEnabled = false;
-            cacheData.LookTypeBool = false;
-            cacheData.LookTypeExBool = true;
             M_Addon.Foreground = new SolidColorBrush(color: Color.FromRgb(156, 156, 156));
             M_LookType.Foreground = new SolidColorBrush(color: Color.FromRgb(156, 156, 156));
             M_LookTypeEx.Foreground = new SolidColorBrush(color: Color.FromRgb(0, 0, 0));
@@ -299,20 +349,23 @@ namespace Assets_Editor
 
         private void M_List_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Monsterptr ShowMonster = (Monsterptr)M_List.SelectedItem;
+            Monster ShowMonster = (Monster)M_List.SelectedItem;
             if (ShowMonster != null)
             {
                 cacheData = null;
                 cacheData = ShowMonster;
                 M_Name.Text = ShowMonster.Name;
-                M_LookType.Value = (int?)ShowMonster.LookType;
-                M_Addon.Value = (int?)ShowMonster.Addon;
-                M_LookTypeEx.Value = (int?)ShowMonster.LookTypeEx;
-                M_LookHead_color.Value = (int?)ShowMonster.LookHead;
-                M_LookBody_color.Value = (int?)ShowMonster.LookBody;
-                M_LookLegs_color.Value = (int?)ShowMonster.LookLegs;
-                M_LookFeet_color.Value = (int?)ShowMonster.LookFeet;
-                M_ID.Value = (int?)ShowMonster.RaceId;
+                if (ShowMonster.AppearanceType != null)
+                {
+                    M_LookType.Value = (bool)ShowMonster.AppearanceType.HasOutfittype ? (int?)ShowMonster.AppearanceType.Outfittype : 0;
+                    M_Addon.Value = (bool)ShowMonster.AppearanceType.HasOutfittype ? (int?)ShowMonster.AppearanceType.Outfitaddon : 0;
+                    M_LookTypeEx.Value = (bool)ShowMonster.AppearanceType.HasItemtype ? (int?)ShowMonster.AppearanceType.Itemtype : 0;
+                    M_LookHead_color.Value = (bool)ShowMonster.AppearanceType.HasOutfittype ? (int?)ShowMonster.AppearanceType.Colors.Lookhead : 0;
+                    M_LookBody_color.Value = (bool)ShowMonster.AppearanceType.HasOutfittype ? (int?)ShowMonster.AppearanceType.Colors.Lookbody : 0;
+                    M_LookLegs_color.Value = (bool)ShowMonster.AppearanceType.HasOutfittype ? (int?)ShowMonster.AppearanceType.Colors.Looklegs : 0;
+                    M_LookFeet_color.Value = (bool)ShowMonster.AppearanceType.HasOutfittype ? (int?)ShowMonster.AppearanceType.Colors.Lookfeet : 0;
+                }
+                M_ID.Value = (int?)ShowMonster.Raceid;
                 M_LookType_ValueChanged(sender, e);
             }
         }

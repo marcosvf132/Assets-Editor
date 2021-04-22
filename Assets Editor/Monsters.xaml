@@ -36,7 +36,7 @@
                     </Style>
                 </DataGrid.ColumnHeaderStyle>
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="ID" Binding="{Binding RaceId}" Width="80"/>
+                    <DataGridTextColumn Header="ID" Binding="{Binding Raceid}" Width="80"/>
                     <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="450"/>
                 </DataGrid.Columns>
             </DataGrid>
@@ -44,7 +44,7 @@
 
         <StackPanel Width="298" Orientation="Horizontal" HorizontalAlignment="Left" Margin="24,20,0,485" Grid.RowSpan="2">
             <Label Content="Name:" Width="51" Padding="0,0,0,0" Margin="10,3,0,3" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-            <TextBox x:Name="M_Name" Width="248" FontWeight="Medium" VerticalAlignment="Stretch" Height="30" Margin="2,3,0,2" Style="{DynamicResource MaterialDesignTextBox}" HorizontalAlignment="Stretch"/>
+            <TextBox x:Name="M_Name" Width="248" FontWeight="Medium" VerticalAlignment="Stretch" Height="30" Margin="2,3,0,2" Style="{DynamicResource MaterialDesignTextBox}" HorizontalAlignment="Stretch" CharacterCasing="Lower"/>
         </StackPanel>
         <StackPanel Width="210" Orientation="Horizontal" HorizontalAlignment="Left" Margin="20,40,0,445" Grid.Row="1">
             <CheckBox x:Name="A_FlagLookType" Content="lookType:" Width="74" Padding="0,0,0,0" Margin="10,3,0,3" VerticalAlignment="Center" Checked="A_FlagLookType_Checked" Unchecked="A_FlagLookTypeEx_Checked"/>

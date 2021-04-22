@@ -16,7 +16,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using Tibia.Protobuf.Appearances;
 using Tibia.Protobuf.Shared;
-using Tibia.Protobuf.StaticData;
+using Tibia.Protobuf.Staticdata;
 
 namespace Assets_Editor
 {
@@ -41,8 +41,6 @@ namespace Assets_Editor
         private ObservableCollection<ShowList> ObjectMountSprList = new ObservableCollection<ShowList>();
         private ObservableCollection<ShowList> ObjectAddonMountSprList = new ObservableCollection<ShowList>();
 
-        // Static data
-        public static List<Monsterptr> ThingsMonsters = new List<Monsterptr>();
         protected override void OnClosed(EventArgs e)
         {
             base.OnClosed(e);
@@ -58,27 +56,9 @@ namespace Assets_Editor
                 A_FlagAutomapColorPicker.AvailableColors.Add(new Xceed.Wpf.Toolkit.ColorItem(System.Windows.Media.Color.FromRgb(myRgbColor.R, myRgbColor.G, myRgbColor.B), x.ToString()));
             }
         }
-        public DatEditor(Appearances appearances, StaticData StaticData)
+        public DatEditor(Appearances appearances)
             :this()
         {
-            // Static Data
-            foreach (var outfit in StaticData.Monsters)
-            {
-                ThingsMonsters.Add(new Monsterptr()
-                {
-                    RaceId = outfit.RaceId,
-                    Name = outfit.Name,
-                    LookTypeExBool = outfit.LookChild.LookTypeEx,
-                    LookTypeEx = outfit.LookChild.LookTypeExValue,
-                    LookTypeBool = outfit.LookChild.LookType,
-                    Addon = outfit.LookChild.Addon,
-                    LookType = outfit.LookChild.LookType ? outfit.LookChild.LookTypeValue : 0,
-                    LookHead = outfit.LookChild.LookColors != null ? outfit.LookChild.LookColors.LookHead : 0,
-                    LookBody = outfit.LookChild.LookColors != null ? outfit.LookChild.LookColors.LookBody : 0,
-                    LookLegs = outfit.LookChild.LookColors != null ? outfit.LookChild.LookColors.LookLegs : 0,
-                    LookFeet = outfit.LookChild.LookColors != null ? outfit.LookChild.LookColors.LookFeet : 0
-                });
-            }
             // Appearance
             foreach (var outfit in appearances.Outfit)
             {
@@ -1153,6 +1133,11 @@ namespace Assets_Editor
         {
             Monsters monsterWindow = new Monsters();
             monsterWindow.Show();
+        }
+        private void Achiev_Click(object sender, RoutedEventArgs e)
+        {
+            Achievements achievWindow = new Achievements();
+            achievWindow.Show();
         }
         public class LowercaseContractResolver : DefaultContractResolver
         {

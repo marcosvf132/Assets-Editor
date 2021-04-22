@@ -14,7 +14,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using Tibia.Protobuf.StaticData;
+using Tibia.Protobuf.Staticdata;
 
 namespace Assets_Editor
 {
@@ -144,39 +144,19 @@ namespace Assets_Editor
             return bitmapImage;
         }
 
-        public static void RegisterNewMonsterStaticData(Monsterptr cacheData)
+        public static void RegisterNewMonsterStaticData(Monster cacheData)
         {
-            foreach (var data_monster in MainWindow.StaticData.Monsters)
+            foreach (var data_monster in MainWindow.StaticData.Monster)
             {
-                if (data_monster.RaceId == cacheData.RaceId)
+                if (data_monster.Raceid == cacheData.Raceid)
                 {
-                    MainWindow.StaticData.Monsters.Remove(data_monster);
+                    MainWindow.StaticData.Monster.Remove(data_monster);
                     break;
                 }
             }
-            StaticDataLookColors lookColor = new StaticDataLookColors
-            {
-                LookHead = cacheData.LookHead,
-                LookBody = cacheData.LookBody,
-                LookLegs = cacheData.LookLegs,
-                LookFeet = cacheData.LookFeet
-            };
-            StaticDataLookChild lookChild = new StaticDataLookChild
-            {
-                LookTypeEx = cacheData.LookTypeExBool,
-                LookTypeExValue = cacheData.LookTypeEx,
-                LookType = cacheData.LookTypeBool,
-                LookTypeValue = cacheData.LookType,
-                LookColors = lookColor,
-                Addon = cacheData.Addon
-            };
-            StaticDataMonster monster = new StaticDataMonster
-            {
-                RaceId = cacheData.RaceId,
-                Name = cacheData.Name,
-                LookChild = lookChild
-            };
-            MainWindow.StaticData.Monsters.Add(monster);
+            Monster monster = new Monster();
+            monster.MergeFrom(cacheData);
+            MainWindow.StaticData.Monster.Add(monster);
         }
             public static void CompileStaticData()
         {
