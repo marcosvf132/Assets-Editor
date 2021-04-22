@@ -40,10 +40,14 @@
         <StackPanel Margin="349,92,0,0" HorizontalAlignment="Left" Grid.RowSpan="2" >
             <Label Content="Monsters:"/>
             <Label Content="Achievements:"/>
+            <Label Content="Bosses:"/>
+            <Label Content="Quests:"/>
         </StackPanel>
         <StackPanel Margin="439,92,0,0" HorizontalAlignment="Left" Grid.RowSpan="2">
             <Label x:Name="MonstersCount"/>
             <Label x:Name="AchievsCount"/>
+            <Label x:Name="BossesCount"/>
+            <Label x:Name="QuestsCount"/>
         </StackPanel>
         <StackPanel Margin="0,145,6,18" HorizontalAlignment="Right" FlowDirection="LeftToRight" Grid.Row="1" >
             <TextBlock Foreground="#FFACACAC" FontSize="10"><Run Text="Assets-Editor v1.0.5 by Arch-Mina (Marcosvf132 edition)"/></TextBlock>

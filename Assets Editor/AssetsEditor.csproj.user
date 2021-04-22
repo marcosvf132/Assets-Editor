@@ -9,7 +9,13 @@
     <Compile Update="Achievements.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Boss.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="DatEditor.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Quests.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="SprEditor.xaml.cs">
@@ -23,10 +29,16 @@
     <Page Update="Achievements.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Update="Boss.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="DatEditor.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="MainWindow.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Quests.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="SprEditor.xaml">

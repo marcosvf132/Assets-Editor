@@ -163,6 +163,16 @@
                                         <materialDesign:PackIcon Kind="Airballoon" />
                                     </MenuItem.Icon>
                                 </MenuItem>
+                                <MenuItem Header="Bosses" Click="Boss_Click">
+                                    <MenuItem.Icon>
+                                        <materialDesign:PackIcon Kind="Hops" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="Quests" Click="Quests_Click">
+                                    <MenuItem.Icon>
+                                        <materialDesign:PackIcon Kind="Jira" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
                             </MenuItem>
                         </Menu>
                         <TabControl x:Name="ViewTabControl" DockPanel.Dock="Top" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="10,0,10,0">

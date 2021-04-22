@@ -1129,6 +1129,16 @@ namespace Assets_Editor
             base.OnClosed(e);
             Application.Current.Shutdown();
         }
+        private void Quests_Click(object sender, RoutedEventArgs e)
+        {
+            Quests questWindow = new Quests();
+            questWindow.Show();
+        }
+        private void Boss_Click(object sender, RoutedEventArgs e)
+        {
+            Bosses bossWindow = new Bosses();
+            bossWindow.Show();
+        }
         private void Monster_open(object sender, RoutedEventArgs e)
         {
             Monsters monsterWindow = new Monsters();

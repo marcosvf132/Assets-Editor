@@ -25,8 +25,17 @@ namespace Assets_Editor
         public static  string _assetsPath = "";
         public static string _datPath = "";
         public static string _staticPath = "";
+        /// <summary>
+        ///  Statid Data
+        /// </summary>
+        public ushort QuestCount { get; set; }
         public ushort MonsterCount { get; set; }
         public ushort AchievCount { get; set; }
+        public ushort BossCount { get; set; }
+        
+        /// <summary>
+        ///  Appearances
+        /// </summary>
         public ushort ObjectCount { get; set; }
         public ushort OutfitCount { get; set; }
         public ushort EffectCount { get; set; }
@@ -119,8 +128,12 @@ namespace Assets_Editor
                 StaticData = StaticData.Parser.ParseFrom(appStream);
                 MonsterCount = (ushort)StaticData.Monster.Count;
                 AchievCount = (ushort)StaticData.Achievements.Count;
+                QuestCount = (ushort)StaticData.Quest.Count;
+                BossCount = (ushort)StaticData.Boss.Count;
                 MonstersCount.Content = MonsterCount;
                 AchievsCount.Content = AchievCount;
+                QuestsCount.Content = QuestCount;
+                BossesCount.Content = BossCount;
             }
         }
 
