@@ -23,7 +23,7 @@ This edited version include all registered creatures that are used on systems li
 
 - [x]  Monsters (Add images)
 - [ ]  Houses (Add images)
-- [ ]  Achievments
+- [x]  Achievments
 
 - Preview:
 
