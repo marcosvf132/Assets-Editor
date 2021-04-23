@@ -49,7 +49,7 @@
             <Label x:Name="BossesCount"/>
             <Label x:Name="QuestsCount"/>
         </StackPanel>
-        <StackPanel Margin="0,145,6,18" HorizontalAlignment="Right" FlowDirection="LeftToRight" Grid.Row="1" >
+        <StackPanel Margin="0,152,6,11" HorizontalAlignment="Right" FlowDirection="LeftToRight" Grid.Row="1" >
             <TextBlock Foreground="#FFACACAC" FontSize="10"><Run Text="Assets-Editor v1.0.5 by Arch-Mina (Marcosvf132 edition)"/></TextBlock>
         </StackPanel>
         <Button x:Name="LoadAssets" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,60,0,0" IsEnabled="False" Click="LoadAssets_Click" Grid.Row="1" >

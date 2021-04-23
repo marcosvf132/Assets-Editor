@@ -24,6 +24,9 @@
     <Compile Update="Monsters.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Houses.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Achievements.xaml">
@@ -45,6 +48,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Monsters.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Houses.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>

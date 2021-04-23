@@ -6,15 +6,15 @@
         xmlns:local="clr-namespace:Assets_Editor" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" x:Class="Assets_Editor.Achievements"
         mc:Ignorable="d"
-        Title="Achievements"  Height="550" Width="570" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" VerticalContentAlignment="Stretch">
+        Title="Achievements" Height="550" Width="570" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" HorizontalAlignment="Left" VerticalAlignment="Top" Left="0" Top="0" >
     <Grid>
         <GroupBox Header="    Achivements information" Height="156" Width="570" FlowDirection="LeftToRight" SnapsToDevicePixels="True" RenderTransformOrigin="0.0,0.0" HorizontalAlignment="Center" VerticalAlignment="Top" BorderBrush="{x:Null}" Foreground="{x:Null}" FontWeight="Bold" BorderThickness="0,0,0,3" Cursor="Arrow" Background="#FFEAE6E6" />
-        <Button x:Name="Achiev_Delete" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="476,4,0,0" IsEnabled="true" Click="Achiev_Delete_Click" Width="74" Height="24" Grid.RowSpan="2" Background="#FF4D219B" BorderBrush="#FF4D219B" >
+        <Button x:Name="Achiev_Delete" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="464,4,0,0" IsEnabled="true" Click="Achiev_Delete_Click" Width="74" Height="24" Background="#FF4D219B" BorderBrush="#FF4D219B" >
             <StackPanel>
                 <TextBlock Text="Delete" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </StackPanel>
         </Button>
-        <Button x:Name="Achiev_New" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="407,4,0,0" IsEnabled="true" Click="Achiev_New_Click" Width="60" Height="24" Grid.RowSpan="2" Background="#FF4D219B" BorderBrush="#FF4D219B" >
+        <Button x:Name="Achiev_New" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="387,4,0,0" IsEnabled="true" Click="Achiev_New_Click" Width="60" Height="24" Background="#FF4D219B" BorderBrush="#FF4D219B" >
             <StackPanel>
                 <TextBlock Text="New" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </StackPanel>
@@ -34,27 +34,20 @@
                 </DataGrid.Columns>
             </DataGrid>
         </GroupBox>
-
-        <StackPanel Width="332" Orientation="Horizontal" HorizontalAlignment="Left" Margin="23,30,0,445">
-            <Label Content="Name:" Width="51" Padding="0,0,0,0" Margin="10,3,0,3" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="13"/>
-            <TextBox x:Name="Achiev_Name_box" Width="248" FontWeight="Medium" VerticalAlignment="Stretch" Height="30" Margin="2,3,0,2" Style="{DynamicResource MaterialDesignTextBox}" HorizontalAlignment="Stretch" CharacterCasing="Normal"/>
+        <StackPanel Width="540" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,50,0,383" Height="100">
+            <Label Content="Name:" Padding="0,0,0,0" Margin="30,5,5,0" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="13"/>
+            <TextBox x:Name="Achiev_Name_box" Width="217" FontWeight="Medium" VerticalAlignment="Top" Height="30" Margin="0,0,0,0" Style="{DynamicResource MaterialDesignTextBox}" CharacterCasing="Normal" VerticalContentAlignment="Top" MaxLines="1" Padding="0,2,0,0"/>
+            <Label Content="Grade:" Width="41" Padding="0,0,0,0" Margin="15,5,0,0" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+            <xctk:IntegerUpDown x:Name="Achiev_Grade" Width="74" FontWeight="Medium" PreviewKeyDown="OnPreviewKeyDown" Text="1" VerticalAlignment="Top" Height="27" Margin="5,0,0,0" Foreground="#FF080808" Minimum="1" Maximum="4" HorizontalContentAlignment="Center" AllowDrop="False" HorizontalAlignment="Left" Padding="0,0,1,0" />
+            <Label Content="ID:" Width="15" Padding="0,0,0,0" Margin="15,5,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+            <xctk:IntegerUpDown x:Name="Achiev_Id" Width="74" FontWeight="Medium" PreviewKeyDown="OnPreviewKeyDown" Text="1" VerticalAlignment="Top" Height="27" Margin="10,0,0,0" Foreground="#FF1ABF00" ValueChanged="Achiev_ID_ValueChanged" Minimum="1" HorizontalContentAlignment="Center" AllowDrop="False" HorizontalAlignment="Left" />
+            <Label Content="Description:" Padding="0,0,0,0" Margin="-536,0,0,28" VerticalAlignment="Bottom" HorizontalAlignment="Left" HorizontalContentAlignment="Left" VerticalContentAlignment="Top"/>
+            <TextBox x:Name="Achiev_Description_box" Width="352" FontWeight="Medium" Height="52" Style="{DynamicResource MaterialDesignDataGridTextColumnEditingStyle}" HorizontalScrollBarVisibility="Disabled" HorizontalContentAlignment="Left" Margin="-466,0,0,9" AutoWordSelection="True" BorderBrush="{x:Null}" SelectionTextBrush="#FF6C6C6C" VerticalScrollBarVisibility="Visible" Foreground="#FF666666" Background="{DynamicResource MaterialDesignBackground}" FlowDirection="LeftToRight" UseLayoutRounding="False" ScrollViewer.CanContentScroll="True" IsUndoEnabled="False" TextWrapping="WrapWithOverflow" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
+            <Button x:Name="Achiev_save" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="-80,0,0,20" IsEnabled="true" Click="Achiev_save_Click" Background="#FF4D219B" BorderBrush="#FF4D219B" Width="60" Height="32" >
+                <StackPanel>
+                    <materialDesign:PackIcon Kind="ContentSaveMove" Width="25" Height="25"/>
+                </StackPanel>
+            </Button>
         </StackPanel>
-        <StackPanel Width="114" Orientation="Horizontal" HorizontalAlignment="Left" Margin="458,37,0,447">
-            <Label Content="ID:" Width="15" Padding="0,0,0,0" Margin="10,3,0,3" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-            <xctk:IntegerUpDown x:Name="Achiev_Id" Width="74" FontWeight="Medium" PreviewKeyDown="OnPreviewKeyDown" Text="1" VerticalAlignment="Center" Height="27" Margin="2,3,0,2" Foreground="#FF1ABF00" ValueChanged="Achiev_ID_ValueChanged" Minimum="1" Maximum="65355" HorizontalContentAlignment="Center" AllowDrop="False" />
-        </StackPanel>
-        <StackPanel Width="134" Orientation="Horizontal" HorizontalAlignment="Left" Margin="329,38,0,447">
-            <Label Content="Grade:" Width="41" Padding="0,0,0,0" Margin="10,3,0,3" VerticalAlignment="Center"/>
-            <xctk:IntegerUpDown x:Name="Achiev_Grade" Width="74" FontWeight="Medium" PreviewKeyDown="OnPreviewKeyDown" Text="1" VerticalAlignment="Center" Height="27" Margin="2,3,0,2" Foreground="#FF080808" Minimum="1" Maximum="4" HorizontalContentAlignment="Center" AllowDrop="False" />
-        </StackPanel>
-        <StackPanel Width="469" Orientation="Horizontal" HorizontalAlignment="Left" Margin="4,76,0,382">
-            <Label Content="Description:" Width="66" Padding="0,0,0,0" Margin="10,3,0,3" VerticalAlignment="Center"/>
-            <TextBox x:Name="Achiev_Description_box" Width="370" FontWeight="Medium" Height="52" Style="{DynamicResource MaterialDesignDataGridTextColumnEditingStyle}" HorizontalScrollBarVisibility="Disabled" HorizontalContentAlignment="Left" Margin="5,0,0,0" AutoWordSelection="True" BorderBrush="{x:Null}" SelectionTextBrush="#FF424242" VerticalScrollBarVisibility="Auto" Foreground="Black" Background="{DynamicResource MaterialDesignBackground}" FlowDirection="LeftToRight" UseLayoutRounding="False" ScrollViewer.CanContentScroll="True" IsUndoEnabled="False" TextWrapping="WrapWithOverflow"/>
-        </StackPanel>
-        <Button x:Name="Achiev_save" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="489,92,0,0" IsEnabled="true" Click="Achiev_save_Click" Width="67" Height="45" Background="#FF4D219B" BorderBrush="#FF4D219B" >
-            <StackPanel>
-                <materialDesign:PackIcon Kind="ContentSaveMove" Width="25" Height="25"/>
-            </StackPanel>
-        </Button>
     </Grid>
 </Window>

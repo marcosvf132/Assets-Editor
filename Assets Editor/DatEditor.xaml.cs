@@ -1134,6 +1134,11 @@ namespace Assets_Editor
             Quests questWindow = new Quests();
             questWindow.Show();
         }
+        private void Houses_Click(object sender, RoutedEventArgs e)
+        {
+            Houses housesWindow = new Houses();
+            housesWindow.Show();
+        }
         private void Boss_Click(object sender, RoutedEventArgs e)
         {
             Bosses bossWindow = new Bosses();

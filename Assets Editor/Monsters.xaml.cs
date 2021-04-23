@@ -26,6 +26,21 @@ namespace Assets_Editor
     public partial class Monsters : Window
     {
         private Monster cacheData = CreateSampleCreature();
+
+        /// <summary>
+        ///  Colors:
+        ///  InvalidCOlor: Red
+        ///  ValidCOlor: Green
+        ///  UnabledColor: Grey
+        ///  EnabledColor: Black
+        /// </summary>
+        static private Color InvalidCOlor = Color.FromRgb(255, 0, 0);
+
+        static private Color ValidCOlor = Color.FromRgb(26, 91, 0);
+
+        static private Color UnabledColor = Color.FromRgb(156, 156, 156);
+
+        static private Color EnabledColor = Color.FromRgb(0, 0, 0);
         public Monsters()
         {
             InitializeComponent();
@@ -55,21 +70,10 @@ namespace Assets_Editor
         }
         private void LoadCurrentMonsterData()
         {
-            // Interface data boxes
-            A_FlagLookType.IsChecked = true;
-            A_FlagLookTypeEx.IsChecked = false;
-            M_Addon.IsEnabled = true;
-            M_LookTypeEx.IsEnabled = false;
-            M_LookType.IsEnabled = true;
-            M_LookHead_color.IsEnabled = true;
-            M_LookBody_color.IsEnabled = true;
-            M_LookLegs_color.IsEnabled = true;
-            M_LookFeet_color.IsEnabled = true;
-
             // Set first monster on the screen
-            if (MainWindow.StaticData.Monster[0] != null)
+            if (MainWindow.StaticData.Monster.First() != null)
             {
-                cacheData.MergeFrom(MainWindow.StaticData.Monster[0]);
+                cacheData = MainWindow.StaticData.Monster.First();
             }
 
             // Monster list
@@ -77,20 +81,51 @@ namespace Assets_Editor
             M_List.ItemsSource = MainWindow.StaticData.Monster;
 
             // Values //
-            M_Name.Text = "name";
-            M_LookType.Value = 0;
-            M_Addon.Value = 0;
-            M_LookTypeEx.Value = 0;
-            M_LookHead_color.Value = 0;
-            M_LookBody_color.Value = 0;
-            M_LookLegs_color.Value = 0;
-            M_LookFeet_color.Value = 0;
-            M_ID.Value = 1;
+            M_Name.Text = cacheData.Name;
+            M_ID.Value = (int?)cacheData.Raceid;
+            if (cacheData.AppearanceType.HasItemtype)
+            {
+                /// Enable LookTypeEx features
+                M_LookTypeEx.IsEnabled = true;
+                A_FlagLookTypeEx.IsChecked = true;
+                M_LookTypeEx.Value = (int?)cacheData.AppearanceType.Itemtype;
+
+                /// Disable LookType features
+                M_Addon.IsEnabled = false;
+                M_LookType.IsEnabled = false;
+                A_FlagLookType.IsChecked = false;
+                M_LookHead_color.IsEnabled = false;
+                M_LookBody_color.IsEnabled = false;
+                M_LookLegs_color.IsEnabled = false;
+                M_LookFeet_color.IsEnabled = false;
+            }
+            else
+            {
+                /// Enable LookType features
+                M_Addon.IsEnabled = true;
+                M_LookType.IsEnabled = true;
+                A_FlagLookType.IsChecked = true;
+                M_LookHead_color.IsEnabled = true;
+                M_LookBody_color.IsEnabled = true;
+                M_LookLegs_color.IsEnabled = true;
+                M_LookFeet_color.IsEnabled = true;
+                M_LookType.Value = (int?)cacheData.AppearanceType.Outfittype;
+                M_LookHead_color.Value = (int?)cacheData.AppearanceType.Colors.Lookhead;
+                M_LookBody_color.Value = (int?)cacheData.AppearanceType.Colors.Lookbody;
+                M_LookLegs_color.Value = (int?)cacheData.AppearanceType.Colors.Looklegs;
+                M_LookFeet_color.Value = (int?)cacheData.AppearanceType.Colors.Lookfeet;
+                M_Addon.Value = (int?)cacheData.AppearanceType.Outfitaddon;
+
+                /// Disable LookTypeEx features
+                A_FlagLookTypeEx.IsChecked = false;
+                M_LookTypeEx.IsEnabled = false;
+            }
 
             /// Outfit 
             M_LookType_Outfit.Source = null;
             M_LookType_Addon.Source = null;
             M_LookType_Addon_Extended.Source = null;
+            M_LookType_ValueChanged(null, null);
         }
         public void OnPreviewKeyDown(object sender, KeyEventArgs args)
         {
@@ -127,39 +162,33 @@ namespace Assets_Editor
         }
         private void M_ID_ValueChanged(object sender, RoutedEventArgs e)
         {
-            M_ID.Foreground = new SolidColorBrush(color: Color.FromRgb(26, 91, 0));
+            M_ID.Foreground = new SolidColorBrush(ValidCOlor);
             foreach (Monster data_monster in MainWindow.StaticData.Monster)
             {
                 if (data_monster.Raceid == M_ID.Value && data_monster != cacheData)
                 {
-                    M_ID.Foreground = new SolidColorBrush(color: Color.FromRgb(255, 0, 0));
+                    M_ID.Foreground = new SolidColorBrush(InvalidCOlor);
                     break;
                 }
             }
         }
         private void M_LookType_ValueChanged(object sender, RoutedEventArgs e)
         {
+            /// Ignore empty preview information
             if (cacheData.AppearanceType == null)
             {
-                cacheData = CreateSampleCreature();
+                return;
             }
 
-            if (cacheData.AppearanceType.HasItemtype)
-            {
-                A_FlagLookType.IsChecked = false;
-                A_FlagLookTypeEx.IsChecked = true;
-                M_LookTypeEx.IsEnabled = true;
-                M_LookType.IsEnabled = false;
-            }
-            else
-            {
-                A_FlagLookType.IsChecked = true;
-                A_FlagLookTypeEx.IsChecked = false;
-                M_LookTypeEx.IsEnabled = false;
-                M_LookType.IsEnabled = true;
-            }
-
-
+            /// Generate new images
+            /// The outfits is created in different stages:
+            /// [1]: Create the outfit base.
+            ///       - Can be only the default outfit w/o addons.
+            /// [2]: Create the first addon.
+            ///       - Not realy addon="1" but only the first pallet.
+            /// [3]: Create the second addons.
+            ///       - This is only activated when the third addon value is selected.
+            ///  -- The images is being colourized on their creation.
             M_LookType_Outfit.Source = null;
             M_LookType_Addon.Source = null;
             M_LookType_Addon_Extended.Source = null;
@@ -178,14 +207,15 @@ namespace Assets_Editor
                             M_LookType_Outfit.Source = Utils.BitmapToBitmapImage(MainWindow.SprLists[(int)outfit.FrameGroup[0].SpriteInfo.SpriteId[0]]);
 
                         if (M_LookType_Outfit.Source == null)
-                            M_LookType.Foreground = new SolidColorBrush(color: Color.FromRgb(255, 0, 0));
+                            M_LookType.Foreground = new SolidColorBrush(InvalidCOlor);
                         else
-                            M_LookType.Foreground = new SolidColorBrush(color: Color.FromRgb(26, 91, 0));
+                            M_LookType.Foreground = new SolidColorBrush(ValidCOlor);
 
                         /// Addon
                         if (outfit.FrameGroup[0].SpriteInfo.SpriteId.Count >= 21)
                         {
-                            M_Addon.Foreground = new SolidColorBrush(color: Color.FromRgb(26, 91, 0));
+                            M_Addon.IsEnabled = true;
+                            M_Addon.Foreground = new SolidColorBrush(ValidCOlor);
                             if (M_Addon.Value > 0)
                                 if (M_Addon.Value < 3)
                                     M_LookType_Addon.Source = Utils.BitmapColourizeSource(MainWindow.SprLists[(int)outfit.FrameGroup[0].SpriteInfo.SpriteId[(int)(((M_Addon.Value - 1) * 8) + 13)]], MainWindow.SprLists[(int)outfit.FrameGroup[0].SpriteInfo.SpriteId[(int)(((M_Addon.Value - 1) * 8) + 12)]], (int)M_LookHead_color.Value, (int)M_LookBody_color.Value, (int)M_LookLegs_color.Value, (int)M_LookFeet_color.Value);
@@ -198,7 +228,8 @@ namespace Assets_Editor
                         }
                         else
                         {
-                            M_Addon.Foreground = new SolidColorBrush(color: Color.FromRgb(255, 0, 0));
+                            M_Addon.IsEnabled = false;
+                            M_Addon.Foreground = new SolidColorBrush(InvalidCOlor);
                         }
                         break;
                     }
@@ -211,9 +242,9 @@ namespace Assets_Editor
                     {
                         M_LookType_Outfit.Source = Utils.BitmapToBitmapImage(MainWindow.SprLists[(int)outfitEx.FrameGroup[0].SpriteInfo.SpriteId[0]]);
                         if (M_LookType_Outfit.Source == null)
-                            M_LookTypeEx.Foreground = new SolidColorBrush(color: Color.FromRgb(255, 0, 0));
+                            M_LookTypeEx.Foreground = new SolidColorBrush(InvalidCOlor);
                         else
-                            M_LookTypeEx.Foreground = new SolidColorBrush(color: Color.FromRgb(26, 91, 0));
+                            M_LookTypeEx.Foreground = new SolidColorBrush(ValidCOlor);
                         break;
                     }
                 }
@@ -222,23 +253,29 @@ namespace Assets_Editor
         }
         private void M_Delete_Click(object sender, RoutedEventArgs e)
         {
+            /// Remove if exist
             foreach (Monster data_monster in MainWindow.StaticData.Monster)
             {
                 if (data_monster.Raceid == cacheData.Raceid)
                 {
                     MainWindow.StaticData.Monster.Remove(data_monster);
-                    break;
+                    M_List.ItemsSource = null;
+                    M_List.ItemsSource = MainWindow.StaticData.Monster;
+                    StatusBar.MessageQueue.Enqueue($"Creature '{cacheData.Name}' id: {cacheData.Raceid} removed");
+                    return;
                 }
             }
-            M_List.ItemsSource = null;
-            M_List.ItemsSource = MainWindow.StaticData.Monster;
-            StatusBar.MessageQueue.Enqueue($"Creature '{cacheData.Name}' with id: {cacheData.Raceid} was removed");
+
+            /// Send erroe message
+            StatusBar.MessageQueue.Enqueue($"Creature '{cacheData.Name}' is not registered");
         }
 
         private void M_New_Click(object sender, RoutedEventArgs e)
         {
+            /// Create new window information
             cacheData = CreateSampleCreature();
-            /// Update window
+
+            /// Update informations
             M_Name.Text = cacheData.Name;
             M_LookType.Value = (int?)cacheData.AppearanceType.Outfittype;
             M_Addon.Value = (int?)cacheData.AppearanceType.Outfitaddon;
@@ -248,12 +285,21 @@ namespace Assets_Editor
             M_LookLegs_color.Value = (int?)cacheData.AppearanceType.Colors.Looklegs;
             M_LookFeet_color.Value = (int?)cacheData.AppearanceType.Colors.Lookfeet;
             M_ID.Value = (int?)cacheData.Raceid;
+
+            /// Reload pewview
             M_LookType_ValueChanged(sender, e);
+
+            /// Send message
             StatusBar.MessageQueue.Enqueue("New creature template was created");
         }
 
         private void M_Save_Click(object sender, RoutedEventArgs e)
         {
+            if ((bool)A_FlagLookTypeEx.IsChecked == (bool)A_FlagLookType.IsChecked)
+            {
+                StatusBar.MessageQueue.Enqueue($"Failed detecting outfit type on '{cacheData.Name}'");
+                return;
+            }
             cacheData.Name = M_Name.Text;
             cacheData.Raceid = (uint)M_ID.Value;
             if ((bool)A_FlagLookType.IsChecked)
@@ -305,45 +351,61 @@ namespace Assets_Editor
 
         private void A_FlagLookType_Checked(object sender, RoutedEventArgs e)
         {
-            A_FlagLookType.IsChecked = true;
+            /// Disactivate LookTypeEx features
             A_FlagLookTypeEx.IsChecked = false;
-            M_Addon.IsEnabled = true;
             M_LookTypeEx.IsEnabled = false;
+
+            /// Activate LookType features
             M_LookType.IsEnabled = true;
-            M_LookType_ValueChanged(sender, e);
+            M_Addon.IsEnabled = true;
             M_LookHead_color.IsEnabled = true;
             M_LookBody_color.IsEnabled = true;
             M_LookLegs_color.IsEnabled = true;
             M_LookFeet_color.IsEnabled = true;
-            M_Addon.Foreground = new SolidColorBrush(color: Color.FromRgb(0, 0, 0));
-            M_LookTypeEx.Foreground = new SolidColorBrush(color: Color.FromRgb(156, 156, 156));
-            M_LookHead_color.Foreground = new SolidColorBrush(color: Color.FromRgb(0, 0, 0));
-            M_LookBody_color.Foreground = new SolidColorBrush(color: Color.FromRgb(0, 0, 0));
-            M_LookLegs_color.Foreground = new SolidColorBrush(color: Color.FromRgb(0, 0, 0));
-            M_LookFeet_color.Foreground = new SolidColorBrush(color: Color.FromRgb(0, 0, 0));
+
+            /// Colors
+            M_Addon.Foreground = new SolidColorBrush(EnabledColor);
+            M_LookTypeEx.Foreground = new SolidColorBrush(UnabledColor);
+            M_LookHead_color.Foreground = new SolidColorBrush(EnabledColor);
+            M_LookBody_color.Foreground = new SolidColorBrush(EnabledColor);
+            M_LookLegs_color.Foreground = new SolidColorBrush(EnabledColor);
+            M_LookFeet_color.Foreground = new SolidColorBrush(EnabledColor);
+
+            /// Reload preview
+            M_LookType_ValueChanged(sender, e);
+
+            /// Send Message
             StatusBar.MessageQueue.Enqueue("Looktype outfit selected");
         }
 
         private void A_FlagLookTypeEx_Checked(object sender, RoutedEventArgs e)
         {
+            /// Disactivate LookType features
             A_FlagLookType.IsChecked = false;
-            A_FlagLookTypeEx.IsChecked = true;
             M_Addon.IsEnabled = false;
-            M_LookTypeEx.IsEnabled = true;
             M_LookType.IsEnabled = false;
             M_LookHead_color.IsEnabled = false;
             M_LookBody_color.IsEnabled = false;
             M_LookLegs_color.IsEnabled = false;
             M_LookFeet_color.IsEnabled = false;
-            M_Addon.Foreground = new SolidColorBrush(color: Color.FromRgb(156, 156, 156));
-            M_LookType.Foreground = new SolidColorBrush(color: Color.FromRgb(156, 156, 156));
-            M_LookTypeEx.Foreground = new SolidColorBrush(color: Color.FromRgb(0, 0, 0));
-            M_LookHead_color.Foreground = new SolidColorBrush(color: Color.FromRgb(156, 156, 156));
-            M_LookBody_color.Foreground = new SolidColorBrush(color: Color.FromRgb(156, 156, 156));
-            M_LookLegs_color.Foreground = new SolidColorBrush(color: Color.FromRgb(156, 156, 156));
-            M_LookFeet_color.Foreground = new SolidColorBrush(color: Color.FromRgb(156, 156, 156));
-            M_LookTypeEx_Preview.MessageQueue.Enqueue("ClientID only");
+
+            /// Activate LookTypeEx features
+            M_LookTypeEx.IsEnabled = true;
+
+            /// Colors
+            M_Addon.Foreground = new SolidColorBrush(UnabledColor);
+            M_LookType.Foreground = new SolidColorBrush(UnabledColor);
+            M_LookTypeEx.Foreground = new SolidColorBrush(EnabledColor);
+            M_LookHead_color.Foreground = new SolidColorBrush(UnabledColor);
+            M_LookBody_color.Foreground = new SolidColorBrush(UnabledColor);
+            M_LookLegs_color.Foreground = new SolidColorBrush(UnabledColor);
+            M_LookFeet_color.Foreground = new SolidColorBrush(UnabledColor);
+
+            /// Reload preview
             M_LookType_ValueChanged(sender, e);
+
+            /// Messages
+            M_LookTypeEx_Preview.MessageQueue.Enqueue("ClientID only");
             StatusBar.MessageQueue.Enqueue("LooktypeEx item outfit selected");
         }
 
