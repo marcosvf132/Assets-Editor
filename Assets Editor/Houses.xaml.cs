@@ -1,21 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Google.Protobuf;
+using Protobuf.Statichousedata;
 using Tibia.Protobuf.Staticdata;
+using House = Tibia.Protobuf.Staticdata.House;
+using HousePosition = Tibia.Protobuf.Staticdata.HousePosition;
 
 namespace Assets_Editor
 {
     public partial class Houses : Window
     {
         private House cacheData = new House();
+        private StaticHouseData houseData;
         public Houses()
         {
             InitializeComponent();
@@ -46,7 +54,7 @@ namespace Assets_Editor
             House_List.ItemsSource = MainWindow.StaticData.House;
         }
 
-        public void OnPreviewKeyDown(object sender, KeyEventArgs args)
+        public void OnPreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs args)
         {
             switch (args.Key)
             {
@@ -95,55 +103,100 @@ namespace Assets_Editor
 
         private void House_save_Click(object sender, RoutedEventArgs e)
         {
-            HousePosition PositionTable = new HousePosition
-            {
-                PosX = (uint)House_Pos_x.Value,
-                PosY = (uint)House_Pos_y.Value,
-                PosZ = (uint)House_Pos_z.Value
-            };
-            cacheData.Name = House_Name_box.Text;
-            cacheData.HouseId = (uint)House_Id.Value;
-            cacheData.City = House_Name_box.Text;
-            cacheData.Price = (uint)House_Price.Value;
-            cacheData.Beds = (uint)House_Beds.Value;
-            cacheData.Unknownstring = "";
-            cacheData.HousePosition = PositionTable;
-            cacheData.SizeSqm = (uint)House_Size.Value;
-            cacheData.Guildhall = (bool)House_Guildhall_Flag.IsChecked;
-            cacheData.Shop = (bool)House_Shop_Flag.IsChecked;
             House_List.ItemsSource = null;
             foreach (House data_House in MainWindow.StaticData.House)
             {
                 if (data_House.HouseId == House_Id.Value)
                 {
-                    MainWindow.StaticData.House.Remove(data_House);
+                    HousePosition PositionTable = new HousePosition
+                    {
+                        PosX = (uint)House_Pos_x.Value,
+                        PosY = (uint)House_Pos_y.Value,
+                        PosZ = (uint)House_Pos_z.Value
+                    };
+                    data_House.Name = House_Name_box.Text;
+                    data_House.City = House_Name_box.Text;
+                    data_House.Price = (uint)House_Price.Value;
+                    data_House.Beds = (uint)House_Beds.Value;
+                    data_House.Unknownstring = "";
+                    data_House.HousePosition = PositionTable;
+                    data_House.SizeSqm = (uint)House_Size.Value;
+                    data_House.Guildhall = (bool)House_Guildhall_Flag.IsChecked;
+                    data_House.Shop = (bool)House_Shop_Flag.IsChecked;
                     break;
                 }
             }
-            MainWindow.StaticData.House.Add(cacheData);
             House_List.ItemsSource = MainWindow.StaticData.House;
         }
 
-        private void House_New_Click(object sender, RoutedEventArgs e)
+        private void House_Import_Click(object sender, RoutedEventArgs e)
         {
-            cacheData = new House();
-            InitHousementValues();
+            OpenFileDialog _housedata = new OpenFileDialog
+            {
+                Title = "Import house data info (.dat)",
+                Filter = "dat files (*.dat)|*.dat",
+                FilterIndex = 1,
+                Multiselect = false
+            };
+            if (_housedata.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                if (File.Exists(_housedata.FileName) == false)
+                    return;
+
+                houseData = StaticHouseData.Parser.ParseFrom(_housedata.OpenFile());
+                if (houseData.Mapdata.Count() > 0 && houseData.House.Count() > 0)
+                {
+                    MainWindow.StaticData.House.Clear();
+                    foreach (var houseImportPtr in houseData.House)
+                    {
+                        HousePosition tmpPos = new HousePosition
+                        {
+                            PosX = houseImportPtr.HousePosition.PosX,
+                            PosY = houseImportPtr.HousePosition.PosY,
+                            PosZ = houseImportPtr.HousePosition.PosZ
+                        };
+                        House tmpHouse = new House
+                        {
+                            HouseId = houseImportPtr.HouseId,
+                            Name = houseImportPtr.Name,
+                            Unknownstring = houseImportPtr.Unknownstring,
+                            Price = houseImportPtr.Price,
+                            Beds = houseImportPtr.Beds,
+                            HousePosition = tmpPos,
+                            SizeSqm = houseImportPtr.SizeSqm,
+                            Guildhall = houseImportPtr.Guildhall,
+                            City = houseImportPtr.City,
+                            Shop = houseImportPtr.Shop
+                        };
+                        MainWindow.StaticData.House.Add(tmpHouse);
+                    }
+                    MainWindow.houseData = houseData;
+                    InitHousementValues();
+                }
+                else
+                    System.Windows.Forms.MessageBox.Show("You have selected a invalid house data package.");
+            }
         }
 
-        private void House_Delete_Click(object sender, RoutedEventArgs e)
+        private void House_Export_Click(object sender, RoutedEventArgs e)
         {
-
-            House_List.ItemsSource = null;
-            foreach (House data_House in MainWindow.StaticData.House)
+            Stream myStream;
+            SaveFileDialog _housedata = new SaveFileDialog
             {
-                if (data_House.HouseId == House_Id.Value)
+                Filter = "dat files (*.dat)|*.dat",
+                Title = "Export house data info (.dat)",
+                FilterIndex = 1,
+                RestoreDirectory = true
+            };
+
+            if (_housedata.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                if ((myStream = _housedata.OpenFile()) != null)
                 {
-                    MainWindow.StaticData.House.Remove(data_House);
-                    break;
+                    MainWindow.houseData.WriteTo(myStream);
+                    myStream.Close();
                 }
             }
-            cacheData = new House();
-            InitHousementValues();
         }
 
         private void House_List_SelectionChanged(object sender, SelectionChangedEventArgs e)

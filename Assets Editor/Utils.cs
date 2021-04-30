@@ -179,6 +179,27 @@ namespace Assets_Editor
             MainWindow.StaticData.WriteTo(output);
             output.Close();
         }
+        public static void CompileStaticHouseData()
+        {
+            File.Copy(System.IO.Path.Combine(MainWindow._assetsPath, "catalog-content.json"), System.IO.Path.Combine(MainWindow._assetsPath, "catalog-content.json-bak"), true);
+            File.Copy(MainWindow._staticHousePath, MainWindow._staticHousePath + "-bak", true);
+
+            using (StreamWriter file = File.CreateText(MainWindow._assetsPath + "\\catalog-content.json"))
+            {
+                JsonSerializer serializer = new JsonSerializer
+                {
+                    Formatting = Formatting.Indented,
+                    ContractResolver = new DatEditor.LowercaseContractResolver(),
+                    NullValueHandling = NullValueHandling.Ignore,
+                    MissingMemberHandling = MissingMemberHandling.Ignore,
+                    DefaultValueHandling = DefaultValueHandling.Ignore,
+                };
+                serializer.Serialize(file, MainWindow.catalog);
+            }
+            var output = File.Create(MainWindow._staticHousePath);
+            MainWindow.houseData.WriteTo(output);
+            output.Close();
+        }
 
         public static List<T> GetLogicalChildCollection<T>(this DependencyObject parent) where T : DependencyObject
         {

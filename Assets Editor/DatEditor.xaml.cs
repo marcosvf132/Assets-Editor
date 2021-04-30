@@ -1183,6 +1183,7 @@ namespace Assets_Editor
             MainWindow.appearances.WriteTo(output);
             output.Close();
             Utils.CompileStaticData();
+            Utils.CompileStaticHouseData();
             StatusBar.MessageQueue.Enqueue($"Compiled.", null, null, null, false, true, TimeSpan.FromSeconds(2));
         }
         private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
