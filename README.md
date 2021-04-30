@@ -2,7 +2,7 @@
 Assets Editor is an open-source editor for client 12+.
 
 Download: (Already compiled, ready to be used)
-https://github.com/marcosvf132/Assets-Editor/releases/tag/v1.0.5
+https://github.com/marcosvf132/Assets-Editor/releases
 
 Requirements
 ========
