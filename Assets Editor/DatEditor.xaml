@@ -140,7 +140,7 @@
                     </Border>
                     <StackPanel>
                         <Menu IsMainMenu="True" DockPanel.Dock="Top">
-                            <MenuItem Header="_File">
+                            <MenuItem Header="_File" >
                                 <MenuItem Header="Exit" InputGestureText="Ctrl+E" Click="Exit_Click">
                                     <MenuItem.Icon>
                                         <materialDesign:PackIcon Kind="ExitToApp" />
@@ -149,6 +149,33 @@
                                 <MenuItem Header="Compile" Click="Compile_Click">
                                     <MenuItem.Icon>
                                         <materialDesign:PackIcon Kind="ContentSaveCogOutline" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                            </MenuItem>
+                            <MenuItem Header="_Data" >
+                                <MenuItem Header="Monsters" Click="Monster_open">
+                                    <MenuItem.Icon>
+                                        <materialDesign:PackIcon Kind="Human" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="Achievements" Click="Achiev_Click">
+                                    <MenuItem.Icon>
+                                        <materialDesign:PackIcon Kind="Airballoon" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="Bosses" Click="Boss_Click">
+                                    <MenuItem.Icon>
+                                        <materialDesign:PackIcon Kind="Hops" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="Quests" Click="Quests_Click">
+                                    <MenuItem.Icon>
+                                        <materialDesign:PackIcon Kind="Jira" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="Houses" Click="Houses_Click">
+                                    <MenuItem.Icon>
+                                        <materialDesign:PackIcon Kind="Home" />
                                     </MenuItem.Icon>
                                 </MenuItem>
                             </MenuItem>

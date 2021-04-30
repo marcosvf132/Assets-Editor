@@ -6803,8 +6803,7 @@ namespace Tibia.Protobuf.Appearances {
     #endif
 
   }
-
-  public sealed partial class AppearanceFlagNPC : pb::IMessage<AppearanceFlagNPC>
+        public sealed partial class AppearanceFlagNPC : pb::IMessage<AppearanceFlagNPC>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
   #endif

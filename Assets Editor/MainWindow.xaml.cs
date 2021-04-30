@@ -13,6 +13,8 @@ using System.Linq;
 using System.Collections.ObjectModel;
 using System.Collections.Concurrent;
 using System.ComponentModel;
+using Tibia.Protobuf.Staticdata;
+using Protobuf.Statichousedata;
 
 namespace Assets_Editor
 {
@@ -23,6 +25,19 @@ namespace Assets_Editor
     {
         public static  string _assetsPath = "";
         public static string _datPath = "";
+        public static string _staticPath = "";
+        public static string _staticHousePath = "";
+        /// <summary>
+        ///  Statid Data
+        /// </summary>
+        public ushort QuestCount { get; set; }
+        public ushort MonsterCount { get; set; }
+        public ushort AchievCount { get; set; }
+        public ushort BossCount { get; set; }
+        
+        /// <summary>
+        ///  Appearances
+        /// </summary>
         public ushort ObjectCount { get; set; }
         public ushort OutfitCount { get; set; }
         public ushort EffectCount { get; set; }
@@ -66,10 +81,14 @@ namespace Assets_Editor
         
         public static List<Catalog> catalog;
 
-        public static Appearances appearances;       
+        public static Appearances appearances;
         public static ObservableCollection<ShowList> AllSprList = new ObservableCollection<ShowList>();
         public static ConcurrentDictionary<int, MemoryStream> SprLists = new ConcurrentDictionary<int, MemoryStream>();
         public static int CustomSprLastId = 249999;
+
+        public static StaticData StaticData;
+        public static StaticHouseData houseData;
+        public static ConcurrentDictionary<int, MemoryStream> HouseSprLists = new ConcurrentDictionary<int, MemoryStream>();
 
         private void LoadCatalogJson()
         {
@@ -83,7 +102,6 @@ namespace Assets_Editor
             };
             catalog = JsonConvert.DeserializeObject<List<Catalog>>(json, settings);
         }
-
         private void LoadAppearances()
         {
             _datPath = String.Format("{0}{1}", _assetsPath, catalog[0].File);
@@ -93,15 +111,69 @@ namespace Assets_Editor
             using (appStream = new FileStream(_datPath, FileMode.Open, FileAccess.ReadWrite, FileShare.Read))
             {
                 appearances = Appearances.Parser.ParseFrom(appStream);
-                ObjectCount = (ushort)appearances.Object[^1].Id;
-                OutfitCount = (ushort)appearances.Outfit[^1].Id;
-                EffectCount = (ushort)appearances.Effect[^1].Id;
-                MissileCount = (ushort)appearances.Missile[^1].Id;
+                ObjectCount = (ushort)appearances.Object.Count;
+                OutfitCount = (ushort)appearances.Outfit.Count;
+                EffectCount = (ushort)appearances.Effect.Count;
+                MissileCount = (ushort)appearances.Missile.Count;
 
                 ObjectsCount.Content = ObjectCount;
                 OutfitsCount.Content = OutfitCount;
                 EffectsCount.Content = EffectCount;
                 MissilesCount.Content = MissileCount;
+            }
+        }
+        private void LoadStaticData()
+        {
+            _staticPath = String.Format("{0}{1}", _assetsPath, catalog[1].File);
+            if (File.Exists(_staticPath) == false)
+                return;
+            FileStream appStream;
+            using (appStream = new FileStream(_staticPath, FileMode.Open, FileAccess.ReadWrite, FileShare.Read))
+            {
+                StaticData = StaticData.Parser.ParseFrom(appStream);
+                MonsterCount = (ushort)StaticData.Monster.Count;
+                AchievCount = (ushort)StaticData.Achievements.Count;
+                QuestCount = (ushort)StaticData.Quest.Count;
+                BossCount = (ushort)StaticData.Boss.Count;
+                MonstersCount.Content = MonsterCount;
+                AchievsCount.Content = AchievCount;
+                QuestsCount.Content = QuestCount;
+                BossesCount.Content = BossCount;
+            }
+        }
+        private void LoadStaticMapData()
+        {
+            _staticHousePath = String.Format("{0}{1}", _assetsPath, catalog[2].File);
+            if (File.Exists(_staticHousePath) == false)
+                return;
+            FileStream appStream;
+            using (appStream = new FileStream(_staticHousePath, FileMode.Open, FileAccess.ReadWrite, FileShare.Read))
+            {
+                houseData = StaticHouseData.Parser.ParseFrom(appStream);
+            }
+
+            houseData.House.Clear();
+            foreach (var housePtr in StaticData.House)
+            {
+                Protobuf.Statichousedata.HousePosition tmpPos = new Protobuf.Statichousedata.HousePosition
+                {
+                    PosX = housePtr.HousePosition.PosX,
+                    PosY = housePtr.HousePosition.PosY,
+                    PosZ = housePtr.HousePosition.PosZ
+                };
+                Protobuf.Statichousedata.House tmpHouse = new Protobuf.Statichousedata.House
+                {
+                    HouseId = housePtr.HouseId,
+                    Name = housePtr.Name,
+                    Unknownstring = housePtr.Unknownstring,
+                    Price = housePtr.Price,
+                    Beds = housePtr.Beds,
+                    HousePosition = tmpPos,
+                    SizeSqm = housePtr.SizeSqm,
+                    Guildhall = housePtr.Guildhall,
+                    Shop = housePtr.Shop
+                };
+                houseData.House.Add(tmpHouse);
             }
         }
 
@@ -120,6 +192,8 @@ namespace Assets_Editor
 
                 LoadCatalogJson();
                 LoadAppearances();
+                LoadStaticData();
+                LoadStaticMapData();
                 LoadAssets.IsEnabled = true;
             }
             else

@@ -1,0 +1,47 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Assets_Editor" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" x:Class="Assets_Editor.Quests"
+        mc:Ignorable="d"
+        Title="Quests"  Height="550" Width="570" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" VerticalContentAlignment="Top" Left="0" Top="0">
+    <Grid>
+        <GroupBox Header="    Quests information" Height="156" Width="570" FlowDirection="LeftToRight" SnapsToDevicePixels="True" RenderTransformOrigin="0.0,0.0" HorizontalAlignment="Center" VerticalAlignment="Top" BorderBrush="{x:Null}" Foreground="{x:Null}" FontWeight="Bold" BorderThickness="0,0,0,3" Cursor="Arrow" Background="#FFEAE6E6" />
+        <Button x:Name="Quest_Delete" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="464,4,0,0" IsEnabled="true" Click="Quest_Delete_Click" Width="74" Height="24" Background="#FF4D219B" BorderBrush="#FF4D219B" >
+            <StackPanel>
+                <TextBlock Text="Delete" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </StackPanel>
+        </Button>
+        <Button x:Name="Quest_New" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="387,4,0,0" IsEnabled="true" Click="Quest_New_Click" Width="60" Height="24" Background="#FF4D219B" BorderBrush="#FF4D219B" >
+            <StackPanel>
+                <TextBlock Text="New" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </StackPanel>
+        </Button>
+        <GroupBox Header="" Margin="0,156,0,0" SnapsToDevicePixels="True" RenderTransformOrigin="0.5,0.5" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}" BorderThickness="1" Cursor="Cross" Padding="9,0.5" FontSize="10" HorizontalAlignment="Center" Width="570" >
+            <DataGrid x:Name="Quest_List" AutoGenerateColumns="False" CanUserReorderColumns="False" CanUserResizeColumns="false" CanUserResizeRows="False" FontSize="11" VerticalScrollBarVisibility="Visible" IsReadOnly="True" ClipboardCopyMode="None" Cursor="Arrow" SelectionChanged="Quest_List_SelectionChanged" Margin="0,0,0,8">
+                <DataGrid.ColumnHeaderStyle>
+                    <Style TargetType="{x:Type DataGridColumnHeader}">
+                        <Setter Property="FontSize" Value="10"/>
+                    </Style>
+                </DataGrid.ColumnHeaderStyle>
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="80"/>
+                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="450"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </GroupBox>
+        <StackPanel Width="538" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,49,0,0" Height="95" VerticalAlignment="Top">
+            <Label Content="Name:" Padding="0,0,0,0" Margin="30,5,5,0" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="13"/>
+            <TextBox x:Name="Quest_Name_box" Width="217" FontWeight="Medium" VerticalAlignment="Center" Height="30" Margin="0,0,0,0" Style="{DynamicResource MaterialDesignTextBox}" CharacterCasing="Normal" VerticalContentAlignment="Top" MaxLines="1" Padding="0,2,0,0"/>
+            <Label Content="ID:" Width="15" Padding="0,0,0,0" Margin="30,5,0,0" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+            <xctk:IntegerUpDown x:Name="Quest_Id" Width="74" FontWeight="Medium" PreviewKeyDown="OnPreviewKeyDown" Text="1" VerticalAlignment="Center" Height="27" Margin="5,5,0,0" Foreground="#FF080808" Minimum="1" HorizontalContentAlignment="Center" AllowDrop="False" HorizontalAlignment="Left" Padding="0,0,1,0" ValueChanged="Quest_ID_ValueChanged"/>
+            <Button x:Name="Quest_save" VerticalAlignment="Center" Margin="50,0,0,0" IsEnabled="true" Click="Quest_save_Click" Background="#FF4D219B" BorderBrush="#FF4D219B" Padding="0,0,0,0" Width="50" Height="35" HorizontalAlignment="Left" >
+                <StackPanel>
+                    <materialDesign:PackIcon Kind="ContentSaveMove" Width="25" Height="25"/>
+                </StackPanel>
+            </Button>
+        </StackPanel>
+    </Grid>
+</Window>

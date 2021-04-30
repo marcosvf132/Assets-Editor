@@ -16,6 +16,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using Tibia.Protobuf.Appearances;
 using Tibia.Protobuf.Shared;
+using Tibia.Protobuf.Staticdata;
 
 namespace Assets_Editor
 {
@@ -24,8 +25,8 @@ namespace Assets_Editor
     /// </summary>
     public partial class DatEditor : Window
     {
-        private static ObservableCollection<ShowList> ThingsOutfit = new ObservableCollection<ShowList>();
-        private static ObservableCollection<ShowList> ThingsItem = new ObservableCollection<ShowList>();
+        public static ObservableCollection<ShowList> ThingsOutfit = new ObservableCollection<ShowList>();
+        public static ObservableCollection<ShowList> ThingsItem = new ObservableCollection<ShowList>();
         private static ObservableCollection<ShowList> ThingsEffect = new ObservableCollection<ShowList>();
         private static ObservableCollection<ShowList> ThingsMissile = new ObservableCollection<ShowList>();
         public Appearance CurrentObjectAppearance;
@@ -58,6 +59,7 @@ namespace Assets_Editor
         public DatEditor(Appearances appearances)
             :this()
         {
+            // Appearance
             foreach (var outfit in appearances.Outfit)
             {
                 ThingsOutfit.Add(new ShowList() { Id = outfit.Id});
@@ -1099,7 +1101,8 @@ namespace Assets_Editor
                     {
                         MainWindow.CustomSprLastId = sheet.LastSpriteid;
                         SprEditor.CustomCatalog.Add(sheet);
-                        using System.Drawing.Bitmap SheetM = LZMA.DecompressFileLZMA(_sprPath);
+                        System.Drawing.Bitmap bitmap = LZMA.DecompressFileLZMA(_sprPath);
+                        using System.Drawing.Bitmap SheetM = bitmap;
                         var lockedBitmap = new LockBitmap(SheetM);
                         lockedBitmap.LockBits();
                         for (int y = 0; y < SheetM.Height; y++)
@@ -1125,6 +1128,31 @@ namespace Assets_Editor
         {
             base.OnClosed(e);
             Application.Current.Shutdown();
+        }
+        private void Quests_Click(object sender, RoutedEventArgs e)
+        {
+            Quests questWindow = new Quests();
+            questWindow.Show();
+        }
+        private void Houses_Click(object sender, RoutedEventArgs e)
+        {
+            Houses housesWindow = new Houses();
+            housesWindow.Show();
+        }
+        private void Boss_Click(object sender, RoutedEventArgs e)
+        {
+            Bosses bossWindow = new Bosses();
+            bossWindow.Show();
+        }
+        private void Monster_open(object sender, RoutedEventArgs e)
+        {
+            Monsters monsterWindow = new Monsters();
+            monsterWindow.Show();
+        }
+        private void Achiev_Click(object sender, RoutedEventArgs e)
+        {
+            Achievements achievWindow = new Achievements();
+            achievWindow.Show();
         }
         public class LowercaseContractResolver : DefaultContractResolver
         {
@@ -1154,6 +1182,8 @@ namespace Assets_Editor
             var output = File.Create(MainWindow._datPath);
             MainWindow.appearances.WriteTo(output);
             output.Close();
+            Utils.CompileStaticData();
+            Utils.CompileStaticHouseData();
             StatusBar.MessageQueue.Enqueue($"Compiled.", null, null, null, false, true, TimeSpan.FromSeconds(2));
         }
         private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
